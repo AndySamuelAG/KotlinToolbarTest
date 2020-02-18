@@ -9,7 +9,9 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.widget.ShareActionProvider
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.MenuItemCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +37,10 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu, menu)
         val itemBusqueda = menu?.findItem(R.id.busqueda)
         var vistaBusqueda = itemBusqueda?.actionView as SearchView
+        val itemCompartir = menu.findItem(R.id.share)
+        val shareActionProvider = MenuItemCompat.getActionProvider(itemCompartir) as ShareActionProvider
+
+        compartirIntent(shareActionProvider)
 
         vistaBusqueda.queryHint = "Escribe tu nombre"
         vistaBusqueda.setOnQueryTextFocusChangeListener { v, hasFocus ->
@@ -57,16 +63,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item?.itemId){
+        when(item.itemId){
             R.id.bFav -> {
                 Toast.makeText(this, "Elemento añadido como favorito", Toast.LENGTH_SHORT).show()
                 return true
             }
-
             else -> {
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun compartirIntent(shareActionProvider: ShareActionProvider){
+        if(shareActionProvider != null){
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type ="text/plain"
+            intent.putExtra(Intent.EXTRA_TEXT, "Este es un mensaje compartido")
+            shareActionProvider.setShareIntent(intent)
+        }
     }
 }
